@@ -1,0 +1,101 @@
+<link rel="import" href="../bower_components/polymer/lib/elements/dom-repeat.html">
+<link rel="import" href="../bower_components/polymer/lib/elements/dom-if.html">
+
+<dom-module id="aj-share-button">
+
+    <template>
+
+    <style is="custom-style">
+
+    </style>
+
+        <!-- shadow DOM goes here -->
+        <button class="custom green" toggles on-click="toggle">
+            Share
+        </button>
+        <template is="dom-if" if="{{pressed}}">
+            <ul>
+                <template is="dom-repeat" items="{{networks}}">
+                    <li on-click="shareOnClick">{{item}}</li>
+                </template>
+            </ul>
+        </template>
+    </template>
+
+    <script>
+        const _networksProps = {
+            facebook: {
+                url: 'https://www.facebook.com/dialog/share'
+                params: {
+                    appID: '',
+                    display: 'popUp',
+                    href: ''
+                }
+            },
+            twitter: {
+                url: 'https://twitter.com'
+            }
+        }
+
+        class AJShareButton extends Polymer.Element {
+            static get is() {
+                return 'aj-share-button';
+            }
+            static get properties() {
+                return {
+                    networks: {
+                        type: Array,
+                        //readOnly: true
+                    },
+
+                    pressed: {
+                        type: Boolean,
+                        notify: true,
+                        reflectToAttribute: true,
+                        value: false
+                    },
+
+                    description: {
+                        type: String
+                    }
+                }
+            }
+
+            static openWindow(url, title, w, h, newWindow) {
+                // Fixes dual-screen position                         Most browsers      Firefox
+                const dualScreenLeft = window.screenLeft != undefined ? window.screenLeft : screen.left;
+                const dualScreenTop = window.screenTop != undefined ? window.screenTop : screen.top;
+
+                var width = window.innerWidth ? window.innerWidth : document.documentElement.clientWidth ? document.documentElement.clientWidth : screen.width;
+                var height = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height;
+
+                var left = ((width / 2) - (w / 2)) + dualScreenLeft;
+                var top = ((height / 2) - (h / 2)) + dualScreenTop;
+                newWindow = window.open(url, title, 'scrollbars=yes, width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
+
+                // Puts focus on the newWindow
+                if (window.focus) {
+                    newWindow.focus();
+                }
+
+                return newWindow;
+            }
+
+            constructor() {
+                super();
+                this._window = null;
+            }
+
+            toggle() {
+                this.pressed = !this.pressed;
+            }
+
+            shareOnClick(e) {
+                const network = _networksProps[e.model.item];
+
+                this._window = AJShareButton.openWindow(network.url, network.title, 600, 400);
+            }
+        }
+        customElements.define(AJShareButton.is, AJShareButton);
+    </script>
+</dom-module>

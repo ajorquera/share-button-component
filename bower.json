@@ -1,0 +1,10 @@
+{
+  "name": "aj-share-button",
+  "version": "1.0.0",
+  "homepage": "Button to share information on different social networks",
+  "license": "MIT",
+
+  "dependencies": {
+    "polymer": "Polymer/polymer#2"
+  }
+}
